@@ -1,1 +1,72 @@
-Hello
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Client</title>
+</head>
+<body>
+  <h1>WebSocket Client</h1>
+  <button id="connectButton">Connect</button>
+  <button id="echoButton" disabled>ECHO</button>
+  <button id="pingButton" disabled>PING</button>
+  <input type="text" id="echoData" placeholder="Enter ECHO data">
+  <pre id="output"></pre>
+
+  <script>
+    let socket;
+
+    const connectButton = document.getElementById('connectButton');
+    const echoButton = document.getElementById('echoButton');
+    const pingButton = document.getElementById('pingButton');
+    const echoDataInput = document.getElementById('echoData');
+    const output = document.getElementById('output');
+
+    connectButton.addEventListener('click', () => {
+      socket = new WebSocket('wss://yourserver.com'); // Замените URL на ваш адрес сервера
+
+      socket.addEventListener('open', () => {
+        output.textContent += 'Connected to WebSocket server\n';
+        echoButton.disabled = false;
+        pingButton.disabled = false;
+      });
+
+      socket.addEventListener('message', (event) => {
+        output.textContent += `Received: ${event.data}\n`;
+      });
+
+      socket.addEventListener('close', () => {
+        output.textContent += 'Disconnected from WebSocket server\n';
+        echoButton.disabled = true;
+        pingButton.disabled = true;
+      });
+
+      socket.addEventListener('error', (error) => {
+        output.textContent += `Error: ${error.message}\n`;
+      });
+    });
+
+    echoButton.addEventListener('click', () => {
+      const data = echoDataInput.value || 'Hello, WebSocket!';
+      const message = JSON.stringify({
+        type: 'request',
+        requestId: 'abc123',
+        action: 'ECHO',
+        data: data
+      });
+      socket.send(message);
+      output.textContent += `Sent: ${message}\n`;
+    });
+
+    pingButton.addEventListener('click', () => {
+      const message = JSON.stringify({
+        type: 'request',
+        requestId: 'abc124',
+        action: 'PING'
+      });
+      socket.send(message);
+      output.textContent += `Sent: ${message}\n`;
+    });
+  </script>
+</body>
+</html>
