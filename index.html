@@ -23,7 +23,7 @@
     const output = document.getElementById('output');
 
     connectButton.addEventListener('click', () => {
-      socket = new WebSocket('ws://localhost'); // Замените URL на ваш адрес сервера
+      socket = new WebSocket('ws://localhost:8080'); // Замените URL на ваш адрес сервера
 
       socket.addEventListener('open', () => {
         output.textContent += 'Connected to WebSocket server\n';
